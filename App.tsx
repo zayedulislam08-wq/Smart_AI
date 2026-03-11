@@ -8,6 +8,8 @@ import { Sidebar } from './components/Sidebar';
 import { BottomNav } from './components/BottomNav';
 import { FloatingChat } from './components/FloatingChat';
 import { FloatingAudio } from './components/FloatingAudio';
+import { FloatingTools } from './components/FloatingTools';
+
 
 export type View = 'home' | 'workflow' | 'service' | 'settings';
 
@@ -71,6 +73,7 @@ const App: React.FC = () => {
             {/* Global Floating AI Assistants */}
             <FloatingChat />
             <FloatingAudio />
+            <FloatingTools onLaunchService={handleSelectService} />
         </div>
     );
 };
