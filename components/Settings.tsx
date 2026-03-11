@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
 import { useApiKeys, type ApiKey } from '../contexts/ApiKeyContext';
-import { GEMINI_MODELS } from '../constants';
+import { GEMINI_MODELS, SERVICES } from '../constants';
 import { SettingsIcon } from './icons/Icons';
+
+const FBT_STORAGE_KEY = 'fbt_settings';
+type FBTSettings = {
+    toolsPosition: 'left' | 'right';
+    showTools: boolean;
+    showChat: boolean;
+    showVoice: boolean;
+    defaultTool: string;
+};
+const loadFBT = (): FBTSettings => {
+    try { return { toolsPosition: 'left', showTools: true, showChat: true, showVoice: true, defaultTool: 'chatbot', ...JSON.parse(localStorage.getItem(FBT_STORAGE_KEY) || '{}') }; }
+    catch { return { toolsPosition: 'left', showTools: true, showChat: true, showVoice: true, defaultTool: 'chatbot' }; }
+};
+
 
 // ─── Icons ──────────────────────────────────────────────────────────────────
 const KeyIcon: React.FC<{ className?: string }> = (p) => (
@@ -142,8 +156,17 @@ export const Settings: React.FC = () => {
     const [newKeyName, setNewKeyName] = useState('');
     const [newKeyValue, setNewKeyValue] = useState('');
     const [addError, setAddError] = useState('');
-    const [activeTab, setActiveTab] = useState<'keys' | 'models'>('keys');
+    const [activeTab, setActiveTab] = useState<'keys' | 'models' | 'buttons'>('keys');
     const [saveState, setSaveState] = useState<'idle' | 'saved'>('idle');
+    const [fbt, setFbt] = useState<FBTSettings>(loadFBT);
+    const [fbtSaved, setFbtSaved] = useState(false);
+
+    const saveFbt = (next: FBTSettings) => {
+        setFbt(next);
+        localStorage.setItem(FBT_STORAGE_KEY, JSON.stringify(next));
+        setFbtSaved(true);
+        setTimeout(() => setFbtSaved(false), 2500);
+    };
 
     const hasActiveKey = apiKeys.some(k => !k.isRateLimited);
 
@@ -162,7 +185,7 @@ export const Settings: React.FC = () => {
         setTimeout(() => setSaveState('idle'), 3000);
     };
 
-    const Tab: React.FC<{ id: 'keys' | 'models'; label: string }> = ({ id, label }) => (
+    const Tab: React.FC<{ id: 'keys' | 'models' | 'buttons'; label: string }> = ({ id, label }) => (
         <button onClick={() => setActiveTab(id)}
             className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeTab === id
                 ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
@@ -195,9 +218,10 @@ export const Settings: React.FC = () => {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-2 p-1 bg-gray-100 dark:bg-white/5 rounded-2xl w-fit">
+            <div className="flex gap-2 p-1 bg-gray-100 dark:bg-white/5 rounded-2xl w-fit flex-wrap">
                 <Tab id="keys" label={`API Keys (${apiKeys.length})`} />
                 <Tab id="models" label="Model Config" />
+                <Tab id="buttons" label="Floating Buttons" />
             </div>
 
             {/* ── API KEYS TAB ── */}
@@ -322,6 +346,75 @@ export const Settings: React.FC = () => {
                                 : <><SaveIcon className="w-4 h-4" /> Save Model Config</>
                             }
                         </button>
+                    </div>
+                </div>
+            )}
+            {/* ── FLOATING BUTTON BEHAVIOR TAB ── */}
+            {activeTab === 'buttons' && (
+                <div className="space-y-4">
+                    {fbtSaved && (
+                        <div className="flex items-center gap-2 px-4 py-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl text-green-700 dark:text-green-400 text-sm font-medium">
+                            <CheckCircleIcon className="w-4 h-4 shrink-0" /> ✓ Settings saved — refresh to apply!
+                        </div>
+                    )}
+                    <div className="bg-white dark:bg-[#111] rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden">
+                        <div className="px-5 py-4 border-b border-gray-100 dark:border-white/5">
+                            <h2 className="font-bold text-gray-900 dark:text-white text-sm">Floating Button Behavior</h2>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Configure the three floating buttons and their defaults.</p>
+                        </div>
+                        <div className="divide-y divide-gray-50 dark:divide-white/5">
+                            {/* Tools panel position */}
+                            <div className="px-5 py-4 flex items-center justify-between gap-4">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">🟣 AI Tools Panel position</p>
+                                    <p className="text-xs text-gray-400">Side of screen the Tools button appears on</p>
+                                </div>
+                                <div className="flex gap-2">
+                                    {(['left', 'right'] as const).map(pos => (
+                                        <button key={pos} onClick={() => saveFbt({ ...fbt, toolsPosition: pos })}
+                                            className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                                                fbt.toolsPosition === pos ? 'bg-violet-600 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>
+                                            {pos.charAt(0).toUpperCase() + pos.slice(1)}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            {/* Show/hide toggles */}
+                            {[
+                                { key: 'showTools' as const, icon: '🟣', label: 'AI Tools Panel', desc: 'Left/right floating tools button' },
+                                { key: 'showChat' as const, icon: '🔵', label: 'Gemini Chat', desc: 'Right blue chat button' },
+                                { key: 'showVoice' as const, icon: '🟢', label: 'Live Voice', desc: 'Right green phone button' },
+                            ].map(({ key, icon, label, desc }) => (
+                                <div key={key} className="px-5 py-4 flex items-center justify-between gap-4">
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{icon} {label}</p>
+                                        <p className="text-xs text-gray-400">{desc}</p>
+                                    </div>
+                                    <button
+                                        onClick={() => saveFbt({ ...fbt, [key]: !fbt[key] })}
+                                        className={`relative w-12 h-6 rounded-full transition-colors ${
+                                            fbt[key] ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                                    >
+                                        <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all ${
+                                            fbt[key] ? 'left-6' : 'left-0.5'}`} />
+                                    </button>
+                                </div>
+                            ))}
+                            {/* Default tool */}
+                            <div className="px-5 py-4 flex items-center justify-between gap-4">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">🟣 Default Tool</p>
+                                    <p className="text-xs text-gray-400">Which service opens first in Tools Panel</p>
+                                </div>
+                                <select
+                                    value={fbt.defaultTool}
+                                    onChange={e => saveFbt({ ...fbt, defaultTool: e.target.value })}
+                                    className="text-xs bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 text-violet-700 dark:text-violet-300 rounded-xl px-3 py-2 focus:outline-none max-w-[180px]"
+                                >
+                                    {SERVICES.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
