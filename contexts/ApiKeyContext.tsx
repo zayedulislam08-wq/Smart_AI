@@ -56,8 +56,8 @@ export const ApiKeyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             if (stored) return JSON.parse(stored);
         } catch { /* ignore */ }
         
-        // Seed with env key if available
-        const envKey = process.env.API_KEY || '';
+        // Seed with env key if available.
+        const envKey = import.meta.env.VITE_GEMINI_API_KEY || '';
         if (envKey) {
             return [{
                 id: 'env_default',

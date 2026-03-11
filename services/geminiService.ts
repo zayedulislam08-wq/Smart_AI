@@ -22,7 +22,7 @@ const getKeyFromStorage = (): string | null => {
 };
 
 export const resolveApiKey = (explicitKey?: string | null): string => {
-    const key = explicitKey || getKeyFromStorage() || process.env.API_KEY;
+    const key = explicitKey || getKeyFromStorage() || import.meta.env.VITE_GEMINI_API_KEY;
     if (!key) {
         throw new Error("No API key found. Please add one in Settings.");
     }
