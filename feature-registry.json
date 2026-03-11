@@ -1,0 +1,244 @@
+{
+  "productName": "Gemini AI Showcase",
+  "documentationVersion": "1.0.0",
+  "maintainersGuide": {
+    "purpose": "Single source of truth for all project modules, product features, and release notes.",
+    "updateWorkflow": [
+      "When a new feature or module is added, update feature-registry.json first.",
+      "When a feature is changed or removed, revise the relevant section in feature-registry.json.",
+      "After editing this file, run `npm run features:sync` to regenerate FEATURES.md.",
+      "If the release includes meaningful product changes, update package.json version before syncing."
+    ]
+  },
+  "productSummary": {
+    "tagline": "A multi-tool Gemini workspace for chat, media, documents, audio, and workflow automation.",
+    "positioning": "Frontend-first Gemini application that combines multiple AI utilities inside a single React and Vite interface."
+  },
+  "moduleGroups": [
+    {
+      "name": "Core Platform",
+      "description": "Foundation modules that control app navigation, settings, theming, API keys, and global UX.",
+      "items": [
+        {
+          "name": "Application Shell",
+          "path": "App.tsx",
+          "responsibility": "Controls the top-level view state and renders the currently selected product area."
+        },
+        {
+          "name": "Navigation System",
+          "path": "components/Header.tsx, components/Sidebar.tsx, components/BottomNav.tsx",
+          "responsibility": "Provides desktop and mobile navigation across all major application areas."
+        },
+        {
+          "name": "Service Discovery UI",
+          "path": "components/HomePage.tsx, components/ServiceCard.tsx, components/ServiceModal.tsx, components/ServiceSelector.tsx",
+          "responsibility": "Presents services, descriptions, and entry points for end users."
+        },
+        {
+          "name": "Settings and Global Controls",
+          "path": "components/Settings.tsx, components/ThemeToggle.tsx",
+          "responsibility": "Hosts app-level preferences such as theme and API key behavior."
+        },
+        {
+          "name": "Theme Management",
+          "path": "contexts/ThemeContext.tsx",
+          "responsibility": "Applies light and dark theme state across the entire application."
+        },
+        {
+          "name": "API Key Management",
+          "path": "contexts/ApiKeyContext.tsx",
+          "responsibility": "Stores multiple Gemini API keys locally, rotates usage, and supports per-feature key selection."
+        },
+        {
+          "name": "Shared Gemini Service Layer",
+          "path": "services/geminiService.ts",
+          "responsibility": "Centralizes Gemini model calls for text, image, grounded search, audio, document, and workflow operations."
+        }
+      ]
+    },
+    {
+      "name": "AI Service Modules",
+      "description": "User-facing feature modules exposed through the main service catalog.",
+      "items": [
+        {
+          "name": "AI Powered Chatbot",
+          "serviceId": "chatbot",
+          "component": "components/Chatbot.tsx",
+          "capabilities": [
+            "General conversational AI",
+            "Gemini Flash based response flow",
+            "Interactive text chat experience"
+          ]
+        },
+        {
+          "name": "Low-Latency Chat",
+          "serviceId": "fast_chat",
+          "component": "components/FastChat.tsx",
+          "capabilities": [
+            "Fast-response chat flow",
+            "Lighter model routing",
+            "Quick-answer interaction pattern"
+          ]
+        },
+        {
+          "name": "Document Processor",
+          "serviceId": "document_processor",
+          "component": "components/DocumentProcessor.tsx",
+          "capabilities": [
+            "Document upload and AI-assisted editing",
+            "Reformatting and transformation flow",
+            "Export support through utility helpers"
+          ]
+        },
+        {
+          "name": "Video Analyzer",
+          "serviceId": "video_analyzer",
+          "component": "components/VideoAnalyzer.tsx",
+          "capabilities": [
+            "Video content analysis",
+            "Summary and key-point extraction",
+            "Subtitle or scene-level interpretation support"
+          ]
+        },
+        {
+          "name": "Image Generation",
+          "serviceId": "image_generator",
+          "component": "components/ImageGenerator.tsx",
+          "capabilities": [
+            "Prompt-based image generation",
+            "Aspect ratio and style control",
+            "Imagen model integration"
+          ]
+        },
+        {
+          "name": "Nano Banana Power Apps",
+          "serviceId": "image_editor",
+          "component": "components/ImageEditor.tsx",
+          "capabilities": [
+            "Prompt-guided image editing",
+            "Gemini Flash Image support",
+            "AI-powered visual refinement"
+          ]
+        },
+        {
+          "name": "Image Understanding",
+          "serviceId": "image_analyzer",
+          "component": "components/ImageAnalyzer.tsx",
+          "capabilities": [
+            "Image upload and inspection",
+            "Prompt-driven photo analysis",
+            "Gemini multimodal reasoning"
+          ]
+        },
+        {
+          "name": "Live Conversation",
+          "serviceId": "live_conversation",
+          "component": "components/LiveConversation.tsx",
+          "capabilities": [
+            "Real-time voice conversation",
+            "Native audio streaming experience",
+            "Input and output transcription support"
+          ]
+        },
+        {
+          "name": "Audio Transcription",
+          "serviceId": "audio_transcriber",
+          "component": "components/AudioTranscriber.tsx",
+          "capabilities": [
+            "Microphone-based transcription",
+            "Speech-to-text flow",
+            "Optional translation-oriented processing"
+          ]
+        },
+        {
+          "name": "Text-to-Speech",
+          "serviceId": "text_to_speech",
+          "component": "components/TextToSpeech.tsx",
+          "capabilities": [
+            "Text to spoken audio generation",
+            "Voice selection flow",
+            "Gemini TTS model integration"
+          ]
+        },
+        {
+          "name": "Web and Maps Grounding",
+          "serviceId": "grounding_search",
+          "component": "components/GroundingSearch.tsx",
+          "capabilities": [
+            "Search-grounded responses",
+            "Maps-grounded answers",
+            "Location-aware retrieval flow"
+          ]
+        },
+        {
+          "name": "Thinking Mode",
+          "serviceId": "complex_task_solver",
+          "component": "components/ComplexTaskSolver.tsx",
+          "capabilities": [
+            "Complex reasoning flow",
+            "Higher-budget thinking configuration",
+            "Advanced problem-solving responses"
+          ]
+        },
+        {
+          "name": "Workflow Builder",
+          "serviceId": "workflow_builder",
+          "component": "components/WorkflowBuilder.tsx",
+          "capabilities": [
+            "Structured workflow generation",
+            "Step-by-step planning output",
+            "JSON-based process design"
+          ]
+        },
+        {
+          "name": "Floating Chat Assistant",
+          "serviceId": "floating_chat",
+          "component": "components/FloatingChat.tsx",
+          "capabilities": [
+            "Global assistant access",
+            "Persistent quick-chat entry point",
+            "Cross-screen support"
+          ]
+        },
+        {
+          "name": "Floating Audio Assistant",
+          "serviceId": "floating_audio",
+          "component": "components/FloatingAudio.tsx",
+          "capabilities": [
+            "Persistent audio access point",
+            "Always-available voice interaction entry",
+            "Cross-screen support"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Utility and Export Layer",
+      "description": "Supporting helpers used by product features for content conversion and file export.",
+      "items": [
+        {
+          "name": "Export Utilities",
+          "path": "utils/exportUtils.ts",
+          "responsibility": "Generates output files and supports export scenarios for AI-produced content."
+        },
+        {
+          "name": "General Helpers",
+          "path": "utils/helpers.ts",
+          "responsibility": "Provides low-level helper logic used by media and feature components."
+        }
+      ]
+    }
+  ],
+  "releaseHistory": [
+    {
+      "version": "0.0.0",
+      "date": "2026-03-12",
+      "summary": "Initial documented feature baseline for the current Gemini AI Showcase repository.",
+      "highlights": [
+        "Established a full feature catalog and module inventory",
+        "Documented core platform modules and AI services",
+        "Introduced a regeneration workflow for future feature updates"
+      ]
+    }
+  ]
+}

@@ -2,18 +2,25 @@ import React, { useState, useRef, useEffect } from 'react';
 import { BotIcon, CloseIcon, SendIcon, SparklesIcon, PaperclipIcon } from './icons/Icons';
 import { generateContent } from '../services/geminiService';
 import { LoadingSpinner } from './common/LoadingSpinner';
+import { GEMINI_MODELS } from '../constants';
+import { useApiKeys } from '../contexts/ApiKeyContext';
 
-const MODELS = [
-    { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash', desc: 'Fast & efficient text' },
-    { id: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro', desc: 'Complex reasoning' },
-    { id: 'gemini-2.0-flash-exp', label: 'Gemini 2.0 Flash (Exp)', desc: 'Experimental flash' },
-];
+// All text-capable models for chat
+const CHAT_MODELS = Object.values(GEMINI_MODELS).filter(m =>
+    !m.id.includes('imagen') &&
+    !m.id.includes('veo') &&
+    !m.id.includes('tts') &&
+    !m.id.includes('image') &&
+    !m.id.includes('audio-preview') &&
+    !m.id.includes('embedding')
+);
 
 export const FloatingChat: React.FC = () => {
+    const { getActiveApiKey, getFeatureConfig } = useApiKeys();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([]);
     const [input, setInput] = useState('');
-    const [selectedModel, setSelectedModel] = useState(MODELS[0].id);
+    const [selectedModel, setSelectedModel] = useState(CHAT_MODELS[0]?.id || 'gemini-2.5-flash');
     const [isLoading, setIsLoading] = useState(false);
     const [showModelDropdown, setShowModelDropdown] = useState(false);
     const [attachedFile, setAttachedFile] = useState<File | null>(null);
@@ -55,12 +62,10 @@ export const FloatingChat: React.FC = () => {
         setIsLoading(true);
 
         try {
-            // Simplified logic: build history for context
             const historyText = newMessages.map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.text}`).join('\n');
             const prompt = `Context of conversation:\n${historyText}\n\nRespond to the last message logically and concisely.`;
-            
-            const responseObj = await generateContent(selectedModel, prompt);
-            
+            const apiKey = getActiveApiKey('floating_chat');
+            const responseObj = await generateContent(selectedModel, prompt, undefined, apiKey);
             setMessages(prev => [...prev, { role: 'model', text: responseObj.text || "No response generated." }]);
         } catch (error) {
             console.error(error);
